@@ -1,17 +1,7 @@
 import { Suspense } from "react";
 import { getSessionUser } from "@/lib/auth";
 import { listAuditLog } from "@/services/reports";
-import { DataTable, type Column } from "@/components/data-table";
-import { formatAcao, formatDateTime } from "@/lib/utils";
-
-type Row = Awaited<ReturnType<typeof listAuditLog>>["items"][number];
-
-const columns: Column<Row>[] = [
-  { key: "quando", header: "Quando", render: (r) => formatDateTime(r.quando) },
-  { key: "usuario", header: "Usuário", render: (r) => r.usuario.nome },
-  { key: "acao", header: "Ação", render: (r) => formatAcao(r.acao) },
-  { key: "motivo", header: "Motivo", render: (r) => r.motivo ?? "—" },
-];
+import { AuditTable } from "@/components/audit-table";
 
 export default async function AuditPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const user = await getSessionUser();
@@ -20,17 +10,23 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
   const page = Number(pageParam ?? 1);
   const result = await listAuditLog(user, { page });
 
+  const rows = result.items.map((r) => ({
+    id: r.id,
+    quando: r.quando instanceof Date ? r.quando.toISOString() : r.quando,
+    usuarioNome: r.usuario.nome,
+    acao: r.acao,
+    motivo: r.motivo ?? null,
+  }));
+
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Auditoria</h1>
       <Suspense fallback={<div>Carregando...</div>}>
-        <DataTable
-          columns={columns}
-          rows={result.items}
+        <AuditTable
+          rows={rows}
           total={result.total}
           page={result.page}
           pageSize={result.pageSize}
-          onPageChange={(p) => { window.location.href = `/audit?page=${p}`; }}
         />
       </Suspense>
     </div>
