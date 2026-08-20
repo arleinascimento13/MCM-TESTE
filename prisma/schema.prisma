@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PAPEL {
+  ADMIN
+  JOB_LEADER
+  FUNCIONARIO
+}
+
+enum STATUS {
+  PENDENTE
+  APROVADA
+  REJEITADA
+}
+
+enum TIPO_OPCAO {
+  DISCIPLINA
+  CENTRO_CUSTO
+  LOCAL
+}
+
+enum ACAO_AUDITORIA {
+  CRIAR
+  EDITAR
+  APROVAR
+  REJEITAR
+  REENVIAR
+  REMOVER
+}
+
+model User {
+  id              String   @id @default(uuid()) @db.Uuid
+  nome            String   @db.VarChar(255)
+  email           String   @unique @db.VarChar(255)
+  senhaHash       String   @map("senha_hash") @db.VarChar(255)
+  papel           PAPEL
+  ativo           Boolean  @default(true)
+  criadoEm        DateTime @default(now()) @map("criado_em") @db.Timestamptz(6)
+  atualizadoEm    DateTime @updatedAt @map("atualizado_em") @db.Timestamptz(6)
+
+  jobLeaderAssignments   JobLeaderAssignment[] @relation("FuncionarioAssignments")
+  funcionarioAssignments JobLeaderAssignment[] @relation("JobLeaderAssignments")
+  alocacoes              Allocation[]
+  opcoesPermitidas       UserAllowedOption[]
+  timeEntries            TimeEntry[] @relation("FuncionarioEntries")
+  entradasLideradas      TimeEntry[] @relation("JobLeaderEntries")
+  logsAuditoria          AuditLog[]
+
+  @@map("users")
+}
+
+model JobLeaderAssignment {
+  id            String   @id @default(uuid()) @db.Uuid
+  funcionarioId String   @map("funcionario_id") @db.Uuid
+  jobLeaderId   String   @map("job_leader_id") @db.Uuid
+  ativo         Boolean  @default(true)
+  criadoEm      DateTime @default(now()) @map("criado_em") @db.Timestamptz(6)
+
+  funcionario User @relation("FuncionarioAssignments", fields: [funcionarioId], references: [id], onDelete: Restrict)
+  jobLeader   User @relation("JobLeaderAssignments", fields: [jobLeaderId], references: [id], onDelete: Restrict)
+
+  @@index([funcionarioId])
+  @@index([jobLeaderId])
+  @@map("job_leader_assignments")
+}
+
+model Project {
+  id           String   @id @default(uuid()) @db.Uuid
+  nome         String   @db.VarChar(255)
+  ativo        Boolean  @default(true)
+  criadoEm     DateTime @default(now()) @map("criado_em") @db.Timestamptz(6)
+  atualizadoEm DateTime @updatedAt @map("atualizado_em") @db.Timestamptz(6)
+
+  alocacoes   Allocation[]
+  timeEntries TimeEntry[]
+
+  @@map("projects")
+}
+
+model CostCenter {
+  id           String   @id @default(uuid()) @db.Uuid
+  nome         String   @db.VarChar(255)
+  ativo        Boolean  @default(true)
+  criadoEm     DateTime @default(now()) @map("criado_em") @db.Timestamptz(6)
+  atualizadoEm DateTime @updatedAt @map("atualizado_em") @db.Timestamptz(6)
+
+  timeEntries TimeEntry[]
+
+  @@map("cost_centers")
+}
+
+model Discipline {
+  id           String   @id @default(uuid()) @db.Uuid
+  nome         String   @db.VarChar(255)
+  ativo        Boolean  @default(true)
+  criadoEm     DateTime @default(now()) @map("criado_em") @db.Timestamptz(6)
+  atualizadoEm DateTime @updatedAt @map("atualizado_em") @db.Timestamptz(6)
+
+  timeEntries TimeEntry[]
+
+  @@map("disciplines")
+}
+
+model Location {
+  id           String   @id @default(uuid()) @db.Uuid
+  nome         String   @db.VarChar(255)
+  ativo        Boolean  @default(true)
+  criadoEm     DateTime @default(now()) @map("criado_em") @db.Timestamptz(6)
+  atualizadoEm DateTime @updatedAt @map("atualizado_em") @db.Timestamptz(6)
+
+  timeEntries TimeEntry[]
+
+  @@map("locations")
+}
+
+model Allocation {
+  id            String   @id @default(uuid()) @db.Uuid
+  funcionarioId String   @map("funcionario_id") @db.Uuid
+  projectId     String   @map("project_id") @db.Uuid
+  criadoEm      DateTime @default(now()) @map("criado_em") @db.Timestamptz(6)
+
+  funcionario User    @relation(fields: [funcionarioId], references: [id], onDelete: Restrict)
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Restrict)
+
+  @@index([funcionarioId])
+  @@index([projectId])
+  @@map("allocations")
+}
+
+model UserAllowedOption {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tipo      TIPO_OPCAO
+  valorId   String    @map("valor_id") @db.Uuid
+  criadoEm  DateTime  @default(now()) @map("criado_em") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@map("user_allowed_options")
+}
+
+model TimeEntry {
+  id              String    @id @default(uuid()) @db.Uuid
+  funcionarioId   String    @map("funcionario_id") @db.Uuid
+  jobLeaderId     String    @map("job_leader_id") @db.Uuid
+  projectId       String    @map("project_id") @db.Uuid
+  mes             Int
+  ano             Int
+  data            DateTime  @db.Date
+  inicio          String    @db.VarChar(5)
+  fim             String    @db.VarChar(5)
+  duracao         Decimal   @db.Decimal(5, 2)
+  descricao       String?   @db.Text
+  costCenterId    String    @map("cost_center_id") @db.Uuid
+  disciplineId    String    @map("discipline_id") @db.Uuid
+  locationId      String    @map("location_id") @db.Uuid
+  horaExtra       Boolean   @default(false) @map("hora_extra")
+  status          STATUS    @default(PENDENTE)
+  motivoRejeicao  String?   @map("motivo_rejeicao") @db.Text
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz(6)
+  criadoEm        DateTime  @default(now()) @map("criado_em") @db.Timestamptz(6)
+  atualizadoEm    DateTime  @updatedAt @map("atualizado_em") @db.Timestamptz(6)
+
+  funcionario  User        @relation("FuncionarioEntries", fields: [funcionarioId], references: [id], onDelete: Restrict)
+  jobLeader    User        @relation("JobLeaderEntries", fields: [jobLeaderId], references: [id], onDelete: Restrict)
+  project      Project     @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  costCenter   CostCenter  @relation(fields: [costCenterId], references: [id], onDelete: Restrict)
+  discipline   Discipline  @relation(fields: [disciplineId], references: [id], onDelete: Restrict)
+  location     Location    @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  logs         AuditLog[]
+
+  @@index([funcionarioId])
+  @@index([status])
+  @@index([funcionarioId, mes, ano])
+  @@index([projectId])
+  @@map("time_entries")
+}
+
+model AuditLog {
+  id            String       @id @default(uuid()) @db.Uuid
+  timeEntryId   String       @map("time_entry_id") @db.Uuid
+  acao          ACAO_AUDITORIA
+  usuarioId     String       @map("usuario_id") @db.Uuid
+  motivo        String?      @db.Text
+  dadosAlterados Json?       @map("dados_alterados") @db.JsonB
+  quando        DateTime     @default(now()) @map("quando") @db.Timestamptz(6)
+
+  timeEntry TimeEntry @relation(fields: [timeEntryId], references: [id], onDelete: Restrict)
+  usuario   User      @relation(fields: [usuarioId], references: [id], onDelete: Restrict)
+
+  @@index([timeEntryId])
+  @@index([quando])
+  @@map("audit_logs")
+}
