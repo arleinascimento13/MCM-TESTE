@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { calcularDuracao, createTimeEntry, approveTimeEntry, rejectTimeEntry, resubmitTimeEntry, softDeleteTimeEntry } from "@/services/time-entries";
+import { Prisma } from "@prisma/client";
+import { calcularDuracao, createTimeEntry, updateTimeEntry, approveTimeEntry, rejectTimeEntry, resubmitTimeEntry, softDeleteTimeEntry } from "@/services/time-entries";
 import { ValidationError, NotFoundError, ConflictError, ForbiddenError } from "@/lib/errors";
 
 const { prismaMock, prismaTxMock } = vi.hoisted(() => {
@@ -95,6 +96,91 @@ describe("createTimeEntry", () => {
     await createTimeEntry(userFunc, inputValido);
     expect(prismaTxMock.auditLog.create).toHaveBeenCalledWith(
       expect.objectContaining({ data: expect.objectContaining({ acao: "CRIAR", usuarioId: "f1" }) })
+    );
+  });
+});
+
+describe("updateTimeEntry", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("rejeita FUNCIONARIO editando linha APROVADA", async () => {
+    prismaMock.timeEntry.findFirst.mockResolvedValue({
+      id: "t1", funcionarioId: "f1", status: "APROVADA", deletedAt: null,
+      inicio: "09:00", fim: "17:00", duracao: "8.00" as unknown as Prisma.Decimal,
+      costCenterId: "c1", disciplineId: "d1", locationId: "l1", projectId: "p1",
+      data: new Date("2026-08-10"), horaExtra: false, descricao: null,
+    });
+    await expect(updateTimeEntry(userFunc, "t1", { descricao: "nova" })).rejects.toThrow(ValidationError);
+  });
+
+  it("rejeita FUNCIONARIO editando linha de outro usuário", async () => {
+    prismaMock.timeEntry.findFirst.mockResolvedValue({
+      id: "t1", funcionarioId: "f9", status: "PENDENTE", deletedAt: null,
+      inicio: "09:00", fim: "17:00", duracao: "8.00" as unknown as Prisma.Decimal,
+      costCenterId: "c1", disciplineId: "d1", locationId: "l1", projectId: "p1",
+      data: new Date("2026-08-10"), horaExtra: false, descricao: null,
+    });
+    await expect(updateTimeEntry(userFunc, "t1", { descricao: "nova" })).rejects.toThrow(ForbiddenError);
+  });
+
+  it("rejeita JOB_LEADER editando linha fora do team", async () => {
+    prismaMock.timeEntry.findFirst.mockResolvedValue({
+      id: "t1", funcionarioId: "f9", status: "PENDENTE", deletedAt: null,
+      inicio: "09:00", fim: "17:00", duracao: "8.00" as unknown as Prisma.Decimal,
+      costCenterId: "c1", disciplineId: "d1", locationId: "l1", projectId: "p1",
+      data: new Date("2026-08-10"), horaExtra: false, descricao: null,
+    });
+    await expect(updateTimeEntry(userJL, "t1", { descricao: "nova" })).rejects.toThrow(ForbiddenError);
+  });
+
+  it("quando inicio/fim mudam sem duracao, update NÃO inclui duracao", async () => {
+    prismaMock.timeEntry.findFirst.mockResolvedValue({
+      id: "t1", funcionarioId: "f1", status: "PENDENTE", deletedAt: null,
+      inicio: "09:00", fim: "17:00", duracao: "8.00" as unknown as Prisma.Decimal,
+      costCenterId: "c1", disciplineId: "d1", locationId: "l1", projectId: "p1",
+      data: new Date("2026-08-10"), horaExtra: false, descricao: null,
+    });
+    prismaTxMock.timeEntry.update.mockResolvedValue({ id: "t1" });
+    await updateTimeEntry(userFunc, "t1", { inicio: "08:00", fim: "16:00" });
+    expect(prismaTxMock.timeEntry.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.not.objectContaining({ duracao: expect.anything() }),
+      })
+    );
+  });
+
+  it("quando costCenterId muda, revalida opções e inclui novo costCenterId no update", async () => {
+    prismaMock.timeEntry.findFirst.mockResolvedValue({
+      id: "t1", funcionarioId: "f1", status: "PENDENTE", deletedAt: null,
+      inicio: "09:00", fim: "17:00", duracao: "8.00" as unknown as Prisma.Decimal,
+      costCenterId: "c1", disciplineId: "d1", locationId: "l1", projectId: "p1",
+      data: new Date("2026-08-10"), horaExtra: false, descricao: null,
+    });
+    prismaMock.costCenter.findFirst.mockResolvedValue({ id: "c2", ativo: true });
+    prismaMock.userAllowedOption.findFirst.mockResolvedValue({ id: "o1" });
+    prismaTxMock.timeEntry.update.mockResolvedValue({ id: "t1" });
+    await updateTimeEntry(userFunc, "t1", { costCenterId: "c2" });
+    expect(prismaMock.userAllowedOption.findFirst).toHaveBeenCalled();
+    expect(prismaTxMock.timeEntry.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ costCenterId: "c2" }) })
+    );
+  });
+
+  it("grava auditoria EDITAR com antes e depois na transação", async () => {
+    prismaMock.timeEntry.findFirst.mockResolvedValue({
+      id: "t1", funcionarioId: "f1", status: "PENDENTE", deletedAt: null,
+      inicio: "09:00", fim: "17:00", duracao: "8.00" as unknown as Prisma.Decimal,
+      costCenterId: "c1", disciplineId: "d1", locationId: "l1", projectId: "p1",
+      data: new Date("2026-08-10"), horaExtra: false, descricao: null,
+    });
+    prismaTxMock.timeEntry.update.mockResolvedValue({ id: "t1", descricao: "nova desc" });
+    await updateTimeEntry(userFunc, "t1", { descricao: "nova desc" });
+    expect(prismaTxMock.auditLog.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ acao: "EDITAR", usuarioId: "f1" }),
+      })
     );
   });
 });
