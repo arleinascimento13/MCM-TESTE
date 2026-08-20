@@ -30,10 +30,10 @@ export function DataTable<T extends { id: string }>({
 
   return (
     <div className="space-y-3">
-      <div className="rounded-md border border-border">
+      <div className="max-h-[calc(100vh-16rem)] overflow-auto rounded-md border border-border">
         <Table>
-          <TableHeader>
-            <TableRow>
+          <TableHeader className="sticky top-0 z-10 bg-background">
+            <TableRow className="h-9">
               {columns.map((c) => (
                 <TableHead key={c.key} className={c.className}>{c.header}</TableHead>
               ))}
@@ -41,14 +41,14 @@ export function DataTable<T extends { id: string }>({
           </TableHeader>
           <TableBody>
             {rows.length === 0 ? (
-              <TableRow>
+              <TableRow className="h-9">
                 <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
                   Nenhum registro encontrado
                 </TableCell>
               </TableRow>
             ) : (
               rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} className="h-9">
                   {columns.map((c) => (
                     <TableCell key={c.key} className={c.className}>
                       {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? "")}
