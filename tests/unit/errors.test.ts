@@ -15,8 +15,9 @@ describe("errors", () => {
   });
 
   it("erros comuns herdam de AppError", () => {
-    for (const E of [UnauthorizedError, ForbiddenError, ConflictError, ValidationError]) {
-      expect(new E("X", "y") instanceof AppError).toBe(true);
-    }
+    expect(new ConflictError() instanceof AppError).toBe(true);
+    expect(new ValidationError() instanceof AppError).toBe(true);
+    expect(new UnauthorizedError() instanceof AppError).toBe(true);
+    expect(new ForbiddenError() instanceof AppError).toBe(true);
   });
 });

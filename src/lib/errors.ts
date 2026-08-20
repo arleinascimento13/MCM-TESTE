@@ -1,10 +1,10 @@
 import { ERROR_CODES, ErrorCode } from "./error-codes";
 
 export class AppError extends Error {
-  readonly code: ErrorCode;
+  readonly code: string;
   readonly statusCode: number;
 
-  constructor(code: ErrorCode, message: string, statusCode: number) {
+  constructor(code: string, message: string, statusCode: number) {
     super(message);
     this.name = "AppError";
     this.code = code;

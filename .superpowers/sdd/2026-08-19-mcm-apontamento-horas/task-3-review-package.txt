@@ -1,0 +1,103 @@
+﻿abc0704 feat: add error layer and error codes
+ src/lib/error-codes.ts    | 15 +++++++++++++++
+ src/lib/errors.ts         | 43 +++++++++++++++++++++++++++++++++++++++++++
+ tests/unit/errors.test.ts | 22 ++++++++++++++++++++++
+ 3 files changed, 80 insertions(+)
+diff --git a/src/lib/error-codes.ts b/src/lib/error-codes.ts
+new file mode 100644
+index 0000000..3b9dee4
+--- /dev/null
++++ b/src/lib/error-codes.ts
+@@ -0,0 +1,15 @@
++export const ERROR_CODES = {
++  VALIDATION_ERROR: "VALIDATION_ERROR",
++  OPTION_NOT_ALLOWED: "OPTION_NOT_ALLOWED",
++  EMPLOYEE_NOT_ALLOCATED: "EMPLOYEE_NOT_ALLOCATED",
++  APPROVED_ENTRY_EDIT: "APPROVED_ENTRY_EDIT",
++  REJECTION_WITHOUT_REASON: "REJECTION_WITHOUT_REASON",
++  UNAUTHORIZED: "UNAUTHORIZED",
++  FORBIDDEN: "FORBIDDEN",
++  NOT_FOUND: "NOT_FOUND",
++  LINE_ALREADY_APPROVED: "LINE_ALREADY_APPROVED",
++  CONFLICT: "CONFLICT",
++  INTERNAL_ERROR: "INTERNAL_ERROR",
++} as const;
++
++export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
+diff --git a/src/lib/errors.ts b/src/lib/errors.ts
+new file mode 100644
+index 0000000..bad2478
+--- /dev/null
++++ b/src/lib/errors.ts
+@@ -0,0 +1,43 @@
++import { ERROR_CODES, ErrorCode } from "./error-codes";
++
++export class AppError extends Error {
++  readonly code: ErrorCode;
++  readonly statusCode: number;
++
++  constructor(code: ErrorCode, message: string, statusCode: number) {
++    super(message);
++    this.name = "AppError";
++    this.code = code;
++    this.statusCode = statusCode;
++  }
++}
++
++export class UnauthorizedError extends AppError {
++  constructor(message = "N├úo autenticado") {
++    super(ERROR_CODES.UNAUTHORIZED, message, 401);
++  }
++}
++
++export class ForbiddenError extends AppError {
++  constructor(message = "Sem permiss├úo para esta a├º├úo") {
++    super(ERROR_CODES.FORBIDDEN, message, 403);
++  }
++}
++
++export class NotFoundError extends AppError {
++  constructor(code: ErrorCode = ERROR_CODES.NOT_FOUND, message = "Recurso n├úo encontrado") {
++    super(code, message, 404);
++  }
++}
++
++export class ConflictError extends AppError {
++  constructor(code: ErrorCode = ERROR_CODES.CONFLICT, message = "Estado conflitante") {
++    super(code, message, 409);
++  }
++}
++
++export class ValidationError extends AppError {
++  constructor(message = "Dados inv├ílidos", code: ErrorCode = ERROR_CODES.VALIDATION_ERROR) {
++    super(code, message, 400);
++  }
++}
+diff --git a/tests/unit/errors.test.ts b/tests/unit/errors.test.ts
+new file mode 100644
+index 0000000..83ceccd
+--- /dev/null
++++ b/tests/unit/errors.test.ts
+@@ -0,0 +1,22 @@
++import { describe, it, expect } from "vitest";
++import { AppError, NotFoundError, ConflictError, ValidationError, ForbiddenError, UnauthorizedError } from "@/lib/errors";
++import { ERROR_CODES } from "@/lib/error-codes";
++
++describe("errors", () => {
++  it("AppError exp├Áe code e statusCode", () => {
++    const e = new AppError("MEU_CODIGO", "mensagem", 400);
++    expect(e.code).toBe("MEU_CODIGO");
++    expect(e.message).toBe("mensagem");
++    expect(e.statusCode).toBe(400);
++  });
++
++  it("NotFoundError usa 404", () => {
++    expect(new NotFoundError(ERROR_CODES.NOT_FOUND, "n├úo existe").statusCode).toBe(404);
++  });
++
++  it("erros comuns herdam de AppError", () => {
++    for (const E of [UnauthorizedError, ForbiddenError, ConflictError, ValidationError]) {
++      expect(new E("X", "y") instanceof AppError).toBe(true);
++    }
++  });
++});

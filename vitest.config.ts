@@ -9,8 +9,12 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
     include: ["tests/**/*.test.{ts,tsx}"],
+    exclude: ["**/node_modules/**", "**/dist/**"],
   },
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },
+  },
+  ssr: {
+    noExternal: ["next-auth"],
   },
 });
