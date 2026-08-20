@@ -45,13 +45,23 @@ export function TimeEntryForm({ initial, entryId }: { initial?: Partial<FormData
 
   useEffect(() => {
     async function load() {
-      const [projects, costCenters, disciplines, locations] = await Promise.all([
+      const [projects, costCenters, disciplines, locations, myOptions] = await Promise.all([
         fetch("/api/projects?ativos=true").then((r) => r.json()).then((r) => r.data),
         fetch("/api/cost-centers?ativos=true").then((r) => r.json()).then((r) => r.data),
         fetch("/api/disciplines?ativos=true").then((r) => r.json()).then((r) => r.data),
         fetch("/api/locations?ativos=true").then((r) => r.json()).then((r) => r.data),
+        fetch("/api/my-options").then((r) => r.json()).then((r) => r.data),
       ]);
-      setOpcoes({ projects, costCenters, disciplines, locations });
+      const { allowedOptions, allocatedProjectIds } = myOptions ?? { allowedOptions: [], allocatedProjectIds: [] };
+      const allowedCcIds = allowedOptions.filter((o: { tipo: string }) => o.tipo === "CENTRO_CUSTO").map((o: { valorId: string }) => o.valorId);
+      const allowedDiscIds = allowedOptions.filter((o: { tipo: string }) => o.tipo === "DISCIPLINA").map((o: { valorId: string }) => o.valorId);
+      const allowedLocIds = allowedOptions.filter((o: { tipo: string }) => o.tipo === "LOCAL").map((o: { valorId: string }) => o.valorId);
+      setOpcoes({
+        projects: projects.filter((p: { id: string }) => allocatedProjectIds.includes(p.id)),
+        costCenters: costCenters.filter((c: { id: string }) => allowedCcIds.includes(c.id)),
+        disciplines: disciplines.filter((d: { id: string }) => allowedDiscIds.includes(d.id)),
+        locations: locations.filter((l: { id: string }) => allowedLocIds.includes(l.id)),
+      });
     }
     load();
   }, []);

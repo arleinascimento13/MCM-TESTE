@@ -7,7 +7,7 @@ import { CreateParamSchema } from "@/schemas/params";
 export async function GET(request: NextRequest) {
   try {
     const user = await requireUser();
-    const ativosOnly = user.papel === "ADMIN" ? request.nextUrl.searchParams.get("ativos") === "true" : true;
+    const ativosOnly = user.papel !== "ADMIN" || request.nextUrl.searchParams.get("ativos") === "true";
     return ok(await listParams("location", ativosOnly));
   } catch (error) {
     return fail(error);

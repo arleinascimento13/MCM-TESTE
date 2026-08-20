@@ -10,6 +10,6 @@ const config: Record<Status, { label: string; className: string }> = {
 };
 
 export function StatusBadge({ status }: { status: Status }) {
-  const cfg = config[status];
+  const cfg = config[status] ?? { label: status, className: "" };
   return <Badge variant="outline" className={cn("font-medium", cfg.className)}>{cfg.label}</Badge>;
 }

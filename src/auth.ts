@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(5),
+  password: z.string().min(6),
 });
 
 export async function authorize(credentials: Partial<Record<"email" | "password", unknown>>) {

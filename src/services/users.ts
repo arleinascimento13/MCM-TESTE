@@ -75,3 +75,20 @@ export async function setAllowedOption(userId: string, tipo: "DISCIPLINA" | "CEN
 export async function removeAllowedOption(id: string) {
   return prisma.userAllowedOption.delete({ where: { id } });
 }
+
+export async function getMyOptions(user: { id: string; papel: "ADMIN" | "JOB_LEADER" | "FUNCIONARIO" }) {
+  const [allowedOptions, allocations] = await Promise.all([
+    prisma.userAllowedOption.findMany({
+      where: { userId: user.id },
+      select: { tipo: true, valorId: true },
+    }),
+    prisma.allocation.findMany({
+      where: { funcionarioId: user.id },
+      select: { projectId: true },
+    }),
+  ]);
+  return {
+    allowedOptions: allowedOptions.map((o) => ({ tipo: o.tipo, valorId: o.valorId })),
+    allocatedProjectIds: allocations.map((a) => a.projectId),
+  };
+}

@@ -4,7 +4,7 @@ const { mockFindUnique, mockBcrypt } = vi.hoisted(() => {
   return {
     mockFindUnique: vi.fn(),
     mockBcrypt: {
-      compare: vi.fn((password: string) => Promise.resolve(password === "certa")),
+      compare: vi.fn((password: string) => Promise.resolve(password === "certas")),
       hash: vi.fn().mockResolvedValue("$2a$10$fakehash"),
     },
   };
@@ -29,7 +29,7 @@ import { authorize } from "@/auth";
 describe("authorize", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockBcrypt.compare.mockImplementation((password: string) => Promise.resolve(password === "certa"));
+    mockBcrypt.compare.mockImplementation((password: string) => Promise.resolve(password === "certas"));
   });
 
   it("retorna null se usuário não existe", async () => {
@@ -50,7 +50,7 @@ describe("authorize", () => {
     mockFindUnique.mockResolvedValue({
       id: "u1", nome: "Ana", email: "ana@mcm.local", senhaHash: "hash", papel: "FUNCIONARIO", ativo: true,
     });
-    const result = await authorize({ email: "ana@mcm.local", password: "certa" });
+    const result = await authorize({ email: "ana@mcm.local", password: "certas" });
     expect(result).toEqual({ id: "u1", nome: "Ana", email: "ana@mcm.local", papel: "FUNCIONARIO" });
   });
 
@@ -58,7 +58,7 @@ describe("authorize", () => {
     mockFindUnique.mockResolvedValue({
       id: "u1", nome: "Ana", email: "ana@mcm.local", senhaHash: "hash", papel: "FUNCIONARIO", ativo: false,
     });
-    const result = await authorize({ email: "ana@mcm.local", password: "certa" });
+    const result = await authorize({ email: "ana@mcm.local", password: "certas" });
     expect(result).toBeNull();
   });
 });

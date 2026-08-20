@@ -217,7 +217,7 @@ export async function updateTimeEntry(user: SessionUser, id: string, input: Part
       timeEntryId: id,
       acao: "EDITAR",
       usuarioId: user.id,
-      dadosAlterados: { antes: entrada, depois: atualizada },
+      dadosAlterados: { antes: { ...entrada, duracao: entrada.duracao?.toString() }, depois: { ...atualizada, duracao: atualizada.duracao?.toString() } },
     });
     return atualizada;
   });
