@@ -106,7 +106,7 @@ tests/
 - [ ] **Step 1: Instalar dependências base**
 
 ```bash
-npm install prisma @prisma/client zod next-auth@beta bcryptjs recharts react-hook-form lucide-react clsx tailwind-merge
+npm install prisma @prisma/client zod next-auth@beta bcryptjs recharts react-hook-form @hookform/resolvers lucide-react clsx tailwind-merge
 npm install -D @types/bcryptjs vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event
 ```
 
@@ -922,12 +922,72 @@ export default function LoginPage() {
 }
 ```
 
-- [ ] **Step 6: Rodar build**
+- [ ] **Step 6: Adicionar rate limiting básico no login**
+
+Criar `src/lib/rate-limit.ts`:
+
+```typescript
+type Bucket = { count: number; resetAt: number };
+const store = new Map<string, Bucket>();
+const MAX = 10; // tentativas por janela
+const WINDOW_MS = 60_000;
+
+export function checkRateLimit(key: string): boolean {
+  const now = Date.now();
+  const bucket = store.get(key);
+  if (!bucket || bucket.resetAt < now) {
+    store.set(key, { count: 1, resetAt: now + WINDOW_MS });
+    return true;
+  }
+  bucket.count += 1;
+  return bucket.count <= MAX;
+}
+```
+
+Em `src/middleware.ts`, importar `checkRateLimit` e aplicar antes de chamar o auth na rota de login (pathname inclui `/api/auth/callback/credentials`):
+
+```typescript
+import { auth } from "@/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
+
+export default auth((req) => {
+  const { pathname } = req.nextUrl;
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+
+  if (pathname.startsWith("/api/auth/callback/credentials") && !checkRateLimit(`login:${ip}`)) {
+    return Response.json(
+      { error: { code: "TOO_MANY_ATTEMPTS", message: "Muitas tentativas de login. Tente novamente em 1 minuto." } },
+      { status: 429 }
+    );
+  }
+
+  const isAutenticado = !!req.auth?.user;
+  const isRotaPublica = pathname === "/login" || pathname.startsWith("/api/auth");
+
+  if (!isAutenticado && !isRotaPublica) {
+    const loginUrl = new URL("/login", req.nextUrl.origin);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return Response.redirect(loginUrl);
+  }
+
+  if (isAutenticado && pathname === "/login") {
+    return Response.redirect(new URL("/", req.nextUrl.origin));
+  }
+});
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+};
+```
+
+Nota: com cookies SameSite=lax configurados pelo Auth.js e validação de origem via SameSite, a proteção CSRF das demais mutações é coberta; o middleware acima adiciona a camada de rate limiting no login.
+
+- [ ] **Step 7: Rodar build**
 
 Run: `npm run build`
 Expected: build passa (login acessível, rotas protegidas pelo middleware).
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add -A
@@ -2667,6 +2727,8 @@ git commit -m "feat: add reports and audit log API"
 
 Run: `npx shadcn@latest init` (responder defaults; selecionar base color slate, css variables yes) e `npx shadcn@latest add button card input label select textarea badge table dropdown-menu dialog drawer checkbox skeleton avatar tooltip command`
 Expected: componentes criados em `src/components/ui/`.
+
+Nota: adicionar ao `src/app/globals.css` as variáveis de cor semântica do DESIGN.md nos blocos `:root` e `.dark`: `--success: #22c55e;`, `--warning: #f59e0b;`, `--info: #06b6d4;` (e registrá-las no tema do Tailwind, ex.: `success`, `warning`, `info` em `tailwind.config.ts` ou `@theme` inline, conforme a versão do shadcn) para que classes como `bg-success/15 text-warning` funcionem.
 
 - [ ] **Step 2: Escrever teste do Sidebar (falha)**
 
