@@ -250,7 +250,7 @@ PENDENTE (criação ou reenvio)
 - Sucesso: objeto com propriedade data (objeto ou array).
 - Erro: objeto com propriedade error contendo code e message.
 - Validação Zod em todo POST/PUT.
-- Códigos de erro: VALIDATION_ERROR (400), OPTION_NOT_ALLOWED (400), EMPLOYEE_NOT_ALLOCATED (400), APPROVED_ENTRY_EDIT (400), REJECTION_WITHOUT_REASON (400), UNAUTHORIZED (401), FORBIDDEN (403), NOT_FOUND (404), LINE_ALREADY_APPROVED (409), CONFLICT (409), INTERNAL_ERROR (500).
+- Códigos de erro: VALIDATION_ERROR (400), OPTION_NOT_ALLOWED (400), EMPLOYEE_NOT_ALLOCATED (400), APPROVED_ENTRY_EDIT (400), REJECTION_WITHOUT_REASON (400) — motivo ausente/inválido na rejeição (reforçado pela service layer além do schema Zod), UNAUTHORIZED (401), FORBIDDEN (403), NOT_FOUND (404), LINE_ALREADY_APPROVED (409), CONFLICT (409), INTERNAL_ERROR (500).
 - Mensagens de erro específicas e descritivas em português.
 
 ### Autenticação
