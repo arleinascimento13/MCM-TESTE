@@ -18,8 +18,11 @@ vi.mock("@/services/scope", () => ({
 }));
 
 import { hoursByProject, listAuditLog } from "@/services/reports";
+import { scopeFilter } from "@/services/scope";
 
 const userAdmin = { id: "a", nome: "A", email: "a@mcm.local", papel: "ADMIN" as const };
+const userJL = { id: "j", nome: "J", email: "j@mcm.local", papel: "JOB_LEADER" as const };
+const userFunc = { id: "f", nome: "F", email: "f@mcm.local", papel: "FUNCIONARIO" as const };
 
 describe("hoursByProject", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -42,6 +45,17 @@ describe("hoursByProject", () => {
     );
     expect(result).toHaveLength(2);
   });
+
+  it("job leader obtém filtro de escopo", async () => {
+    prismaMock.timeEntry.groupBy.mockResolvedValue([]);
+    prismaMock.project.findMany.mockResolvedValue([]);
+    await hoursByProject(userJL, {});
+    expect(prismaMock.timeEntry.groupBy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ funcionarioId: { in: ["f1", "f2"] } }),
+      })
+    );
+  });
 });
 
 describe("listAuditLog", () => {
@@ -52,5 +66,19 @@ describe("listAuditLog", () => {
     prismaMock.auditLog.count.mockResolvedValue(0);
     const result = await listAuditLog(userAdmin, {});
     expect(result).toEqual({ items: [], total: 0, page: 1, pageSize: 50 });
+  });
+
+  it("funcionário obtém filtro por próprio id", async () => {
+    prismaMock.auditLog.findMany.mockResolvedValue([]);
+    prismaMock.auditLog.count.mockResolvedValue(0);
+    vi.mocked(scopeFilter).mockResolvedValueOnce({ funcionarioId: "f" });
+    const result = await listAuditLog(userFunc, { page: 1, pageSize: 50 });
+    expect(prismaMock.auditLog.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          timeEntry: expect.objectContaining({ funcionarioId: "f" }),
+        }),
+      })
+    );
   });
 });
