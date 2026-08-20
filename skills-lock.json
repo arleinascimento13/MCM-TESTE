@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "ultimate-design-system-master": {
+      "source": "fabricioctelles/skills",
+      "sourceType": "github",
+      "skillPath": "skills/ultimate-design-system-master/SKILL.md",
+      "computedHash": "ea9cf2d96125734dc027a3b0a24fd1db7c928a64af65356732ee3b1a18c3cb4c"
+    }
+  }
+}
