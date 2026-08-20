@@ -24,13 +24,22 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #0F172A;
     --foreground: #ededed;
     --success: #22c55e;
     --warning: #f59e0b;
     --info: #06b6d4;
     --destructive: #ef4444;
   }
+}
+
+.dark {
+  --background: #0F172A;
+  --foreground: #ededed;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --info: #06b6d4;
+  --destructive: #ef4444;
 }
 
 body {
