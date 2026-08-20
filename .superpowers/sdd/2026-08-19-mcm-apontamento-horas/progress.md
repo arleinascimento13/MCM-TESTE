@@ -1,4 +1,4 @@
 # SDD ledger — plan: docs/superpowers/plans/2026-08-19-mcm-apontamento-horas.md
 
-Task 8: complete (commits 7587c53..ffb63f9, 1 fix round ativos enforcement, review clean)
-Task 9: fix round 1/5 (1 addressed — non-admin scope assertions; 0 open; commits 3ecc952..284b6ad)
+Task 9: complete (commits ffb63f9..284b6ad, 1 fix round scope tests, review clean)
+Task 10: complete (commits 284b6ad..ea7844d687898974cb7ffdfbbf16a6562dd146c0, review pending)
