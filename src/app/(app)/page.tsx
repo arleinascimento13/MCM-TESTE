@@ -2,6 +2,7 @@ import { getSessionUser } from "@/lib/auth";
 import { KpiCard } from "@/components/kpi-card";
 import { ChartCard } from "@/components/chart-card";
 import { ProjetoChart } from "@/components/projeto-chart";
+import { PeriodChart } from "@/components/period-chart";
 import { hoursByProject, hoursByPeriod } from "@/services/reports";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +27,9 @@ export default async function DashboardPage() {
       </div>
       <ChartCard title="Horas por projeto">
         <ProjetoChart data={porProjeto} />
+      </ChartCard>
+      <ChartCard title="Horas por período">
+        <PeriodChart data={porPeriodo} />
       </ChartCard>
     </div>
   );
