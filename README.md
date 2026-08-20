@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MCM — Sistema de Apontamento de Horas
 
-## Getting Started
+Sistema interno de registro de apontamento de horas da MCM. Permite que funcionários registrem suas horas trabalhadas em projetos, centros de custo, disciplinas e locais, com aprovação por job leaders.
 
-First, run the development server:
+## Requisitos
+
+- Node.js 20+
+- PostgreSQL (instalado localmente, sem Docker)
+- npm ou yarn
+
+## Setup local
+
+### 1. Criar o banco de dados
+
+Acesse o PostgreSQL e crie o banco `mcm`:
+
+```sql
+CREATE DATABASE mcm;
+```
+
+### 2. Configurar variáveis de ambiente
+
+Copie o arquivo de exemplo e ajuste os valores:
+
+```bash
+cp .env.example .env
+```
+
+Edite o `.env` com as credenciais do seu banco local:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/mcm?schema=public"
+AUTH_SECRET="seu-secret-aqui"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+### 3. Instalar dependências
+
+```bash
+npm install
+```
+
+### 4. Aplicar migrations
+
+```bash
+npx prisma migrate dev
+```
+
+### 5. Popular o banco com dados de demonstração
+
+```bash
+npx prisma db seed
+```
+
+### 6. Iniciar o servidor de desenvolvimento
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Credenciais padrão
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Após executar o seed, as seguintes contas estão disponíveis:
 
-## Learn More
+| Usuário | Senha | Papel |
+|---|---|---|
+| admin@mcm.local | Admin123! | ADMIN |
+| lider@mcm.local | Senha123! | JOB_LEADER |
+| func1@mcm.local | Senha123! | FUNCIONARIO |
+| func2@mcm.local | Senha123! | FUNCIONARIO |
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run dev    # Servidor de desenvolvimento
+npm run build  # Build de produção
+npm run start  # Iniciar servidor de produção
+npm run lint   # Verificação de lint
+npm test       # Executar todos os testes
+```
