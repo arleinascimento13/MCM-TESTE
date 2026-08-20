@@ -12,7 +12,7 @@ CREATE TYPE "ACAO_AUDITORIA" AS ENUM ('CRIAR', 'EDITAR', 'APROVAR', 'REJEITAR', 
 
 -- CreateTable
 CREATE TABLE "users" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "nome" VARCHAR(255) NOT NULL,
     "email" VARCHAR(255) NOT NULL,
     "senha_hash" VARCHAR(255) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE "users" (
 
 -- CreateTable
 CREATE TABLE "job_leader_assignments" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "funcionario_id" UUID NOT NULL,
     "job_leader_id" UUID NOT NULL,
     "ativo" BOOLEAN NOT NULL DEFAULT true,
@@ -35,7 +35,7 @@ CREATE TABLE "job_leader_assignments" (
 
 -- CreateTable
 CREATE TABLE "projects" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "nome" VARCHAR(255) NOT NULL,
     "ativo" BOOLEAN NOT NULL DEFAULT true,
     "criado_em" TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
@@ -45,7 +45,7 @@ CREATE TABLE "projects" (
 
 -- CreateTable
 CREATE TABLE "cost_centers" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "nome" VARCHAR(255) NOT NULL,
     "ativo" BOOLEAN NOT NULL DEFAULT true,
     "criado_em" TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
@@ -55,7 +55,7 @@ CREATE TABLE "cost_centers" (
 
 -- CreateTable
 CREATE TABLE "disciplines" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "nome" VARCHAR(255) NOT NULL,
     "ativo" BOOLEAN NOT NULL DEFAULT true,
     "criado_em" TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
@@ -65,7 +65,7 @@ CREATE TABLE "disciplines" (
 
 -- CreateTable
 CREATE TABLE "locations" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "nome" VARCHAR(255) NOT NULL,
     "ativo" BOOLEAN NOT NULL DEFAULT true,
     "criado_em" TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
@@ -75,7 +75,7 @@ CREATE TABLE "locations" (
 
 -- CreateTable
 CREATE TABLE "allocations" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "funcionario_id" UUID NOT NULL,
     "project_id" UUID NOT NULL,
     "criado_em" TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
@@ -84,7 +84,7 @@ CREATE TABLE "allocations" (
 
 -- CreateTable
 CREATE TABLE "user_allowed_options" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "user_id" UUID NOT NULL,
     "tipo" "TIPO_OPCAO" NOT NULL,
     "valor_id" UUID NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE "user_allowed_options" (
 
 -- CreateTable
 CREATE TABLE "time_entries" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "funcionario_id" UUID NOT NULL,
     "job_leader_id" UUID NOT NULL,
     "project_id" UUID NOT NULL,
@@ -119,7 +119,7 @@ CREATE TABLE "time_entries" (
 
 -- CreateTable
 CREATE TABLE "audit_logs" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "time_entry_id" UUID NOT NULL,
     "acao" "ACAO_AUDITORIA" NOT NULL,
     "usuario_id" UUID NOT NULL,
