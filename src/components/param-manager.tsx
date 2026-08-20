@@ -45,6 +45,7 @@ export function ParamManager({ resource, title }: { resource: string; title: str
 
   return (
     <div className="space-y-4">
+      <h2 className="text-lg font-medium">{title}</h2>
       <div className="flex items-end gap-3">
         <div className="space-y-1">
           <Label htmlFor="novo-nome">Novo nome</Label>

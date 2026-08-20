@@ -13,24 +13,40 @@ type Option = { id: string; tipo: string; user: { nome: string }; valorId: strin
 
 type ValorOption = { id: string; nome: string };
 
+const tipoLabel = (t: string) =>
+  t === "DISCIPLINA" ? "Disciplina" : t === "CENTRO_CUSTO" ? "Centro de custo" : "Local";
+
 export default function OpcoesPage() {
   const [options, setOptions] = useState<Option[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [valores, setValores] = useState<ValorOption[]>([]);
+  const [valorNames, setValorNames] = useState<Record<string, string>>({});
   const [userId, setUserId] = useState<string>("");
   const [tipo, setTipo] = useState<string>("");
   const [valorId, setValorId] = useState<string>("");
   const [erro, setErro] = useState<string | null>(null);
 
   async function load() {
-    const [optRes, usersRes] = await Promise.all([
+    const [optRes, usersRes, discRes, ccRes, locRes] = await Promise.all([
       fetch("/api/user-allowed-options"),
       fetch("/api/users"),
+      fetch("/api/disciplines"),
+      fetch("/api/cost-centers"),
+      fetch("/api/locations"),
     ]);
     const optBody = await optRes.json();
     const usersBody = await usersRes.json();
+    const discBody = await discRes.json();
+    const ccBody = await ccRes.json();
+    const locBody = await locRes.json();
     setOptions(optBody.data ?? []);
     setUsers(usersBody.data ?? []);
+
+    const names: Record<string, string> = {};
+    (discBody.data ?? []).forEach((d: { id: string; nome: string }) => { names[d.id] = d.nome; });
+    (ccBody.data ?? []).forEach((c: { id: string; nome: string }) => { names[c.id] = c.nome; });
+    (locBody.data ?? []).forEach((l: { id: string; nome: string }) => { names[l.id] = l.nome; });
+    setValorNames(names);
   }
 
   useEffect(() => { load(); }, []);
@@ -131,8 +147,8 @@ export default function OpcoesPage() {
           {options.map((o) => (
             <TableRow key={o.id}>
               <TableCell>{o.user.nome}</TableCell>
-              <TableCell>{o.tipo}</TableCell>
-              <TableCell>{o.valorId}</TableCell>
+              <TableCell>{tipoLabel(o.tipo)}</TableCell>
+              <TableCell>{valorNames[o.valorId] ?? o.valorId}</TableCell>
               <TableCell className="text-right">
                 <Button variant="ghost" size="sm" onClick={() => remove(o.id)}>
                   <Trash2 className="h-4 w-4" />
