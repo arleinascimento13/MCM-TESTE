@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { ValidationError } from "@/lib/errors";
-import { ERROR_CODES } from "@/lib/error-codes";
 
 export async function createUser(data: { nome: string; email: string; senha: string; papel: "ADMIN" | "JOB_LEADER" | "FUNCIONARIO" }) {
   const existe = await prisma.user.findUnique({ where: { email: data.email } });
