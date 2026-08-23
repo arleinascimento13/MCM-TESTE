@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Job Leader</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { 50:'#eef2ff',100:'#e0e7ff',500:'#4f46e5',600:'#4338ca',700:'#3730a3' },
+        },
+        fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'] }
+      }
+    }
+  }
+</script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+<div id="app" class="flex w-full">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="hidden lg:flex lg:flex-col w-64 bg-white border-r border-gray-200 h-[1024px] sticky top-0">
+    <div class="h-16 flex items-center gap-2 px-6 border-b border-gray-200">
+      <div class="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center text-white font-bold text-sm">M</div>
+      <span class="font-bold text-lg text-gray-900">MCM</span>
+    </div>
+    <nav class="flex-1 px-4 py-6 space-y-1">
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary-50 text-primary-700 font-medium text-sm">
+        <i class="fa-solid fa-gauge w-4 text-center"></i> Dashboard
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm">
+        <i class="fa-solid fa-list-check w-4 text-center"></i> Aprovações
+        <span class="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5">7</span>
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm">
+        <i class="fa-solid fa-users w-4 text-center"></i> Minha Equipe
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm">
+        <i class="fa-solid fa-chart-line w-4 text-center"></i> Relatórios
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm">
+        <i class="fa-solid fa-clock-rotate-left w-4 text-center"></i> Histórico / Auditoria
+      </a>
+    </nav>
+    <div class="p-4 border-t border-gray-200">
+      <div class="flex items-center gap-3 px-2 py-2">
+        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" class="w-9 h-9 rounded-full object-cover" alt="avatar">
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-gray-900 truncate">Marina Alves</p>
+          <p class="text-xs text-gray-500">Job Leader</p>
+        </div>
+        <i class="fa-solid fa-arrow-right-from-bracket text-gray-400 hover:text-gray-600 cursor-pointer"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div id="main-content" class="flex-1 min-w-0 flex flex-col">
+
+    <!-- Header -->
+    <header id="header" class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-20">
+      <div class="flex items-center gap-3">
+        <button class="lg:hidden text-gray-500"><i class="fa-solid fa-bars"></i></button>
+        <div>
+          <h1 class="text-lg font-bold text-gray-900">Aprovações da Equipe</h1>
+          <p class="text-xs text-gray-500 hidden sm:block">Revise e aprove os apontamentos de horas do seu time</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <select id="periodo-select" class="hidden sm:block text-sm border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option>Março 2024</option>
+          <option>Fevereiro 2024</option>
+        </select>
+        <button class="relative text-gray-500 hover:text-gray-700">
+          <i class="fa-regular fa-bell text-lg"></i>
+          <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center">7</span>
+        </button>
+        <button class="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg">
+          <i class="fa-solid fa-file-export"></i> <span class="hidden sm:inline">Exportar</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="p-4 sm:p-6 space-y-6">
+
+      <!-- KPI Cards -->
+      <div id="kpi-cards" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-xl border border-gray-200 p-5">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Pendentes</span>
+            <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center"><i class="fa-solid fa-hourglass-half text-amber-500 text-sm"></i></div>
+          </div>
+          <p class="text-2xl font-bold text-gray-900">7</p>
+          <p class="text-xs text-gray-500 mt-1">Aguardando sua análise</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-5">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Aprovadas no mês</span>
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center"><i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i></div>
+          </div>
+          <p class="text-2xl font-bold text-gray-900">86</p>
+          <p class="text-xs text-gray-500 mt-1">De 12 colaboradores</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-5">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Rejeitadas no mês</span>
+            <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center"><i class="fa-solid fa-circle-xmark text-red-500 text-sm"></i></div>
+          </div>
+          <p class="text-2xl font-bold text-gray-900">9</p>
+          <p class="text-xs text-gray-500 mt-1">Taxa de rejeição: 9,4%</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-5">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Horas da equipe</span>
+            <div class="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center"><i class="fa-regular fa-clock text-primary-600 text-sm"></i></div>
+          </div>
+          <p class="text-2xl font-bold text-gray-900">1.842h</p>
+          <p class="text-xs text-gray-500 mt-1">Neste mês</p>
+        </div>
+      </div>
+
+      <!-- Chart + team breakdown -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div id="chart-card" class="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-gray-900 text-sm">Horas aprovadas vs rejeitadas por semana</h3>
+            <span class="text-xs text-gray-400">Março 2024</span>
+          </div>
+          <div id="teamChart" style="height:260px"></div>
+        </div>
+
+        <div id="team-breakdown" class="bg-white rounded-xl border border-gray-200 p-5">
+          <h3 class="font-semibold text-gray-900 text-sm mb-4">Pendências por colaborador</h3>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" class="w-8 h-8 rounded-full object-cover">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">Rafael Souza</p>
+                <p class="text-xs text-gray-500">3 linhas pendentes</p>
+              </div>
+              <span class="text-xs font-semibold text-amber-600">3</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-7.jpg" class="w-8 h-8 rounded-full object-cover">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">Camila Rocha</p>
+                <p class="text-xs text-gray-500">2 linhas pendentes</p>
+              </div>
+              <span class="text-xs font-semibold text-amber-600">2</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" class="w-8 h-8 rounded-full object-cover">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">Bruno Lima</p>
+                <p class="text-xs text-gray-500">1 linha pendente</p>
+              </div>
+              <span class="text-xs font-semibold text-amber-600">1</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg" class="w-8 h-8 rounded-full object-cover">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">Diego Martins</p>
+                <p class="text-xs text-gray-500">1 linha pendente</p>
+              </div>
+              <span class="text-xs font-semibold text-amber-600">1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Approval table -->
+      <div id="table-card" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="p-5 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <h3 class="font-semibold text-gray-900 text-sm">Fila de aprovação</h3>
+            <span class="text-xs font-medium text-amber-700 bg-amber-50 px-2 py-1 rounded-full">7 pendentes</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+              <input type="text" placeholder="Buscar colaborador..." class="pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg w-48 focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </div>
+            <select class="text-sm border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+              <option>Todos status</option>
+              <option>Pendente</option>
+              <option>Aprovada</option>
+              <option>Rejeitada</option>
+            </select>
+            <button class="flex items-center gap-2 text-sm font-medium border border-gray-300 rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">
+              <i class="fa-solid fa-file-csv text-emerald-600"></i> CSV
+            </button>
+            <button class="flex items-center gap-2 text-sm font-medium border border-gray-300 rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">
+              <i class="fa-solid fa-file-excel text-emerald-700"></i> Excel
+            </button>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <th class="px-5 py-3">Colaborador</th>
+                <th class="px-5 py-3">Data</th>
+                <th class="px-5 py-3">Início–Fim</th>
+                <th class="px-5 py-3">Duração</th>
+                <th class="px-5 py-3">Projeto / C. Custo</th>
+                <th class="px-5 py-3">Disciplina</th>
+                <th class="px-5 py-3">Extra</th>
+                <th class="px-5 py-3">Status</th>
+                <th class="px-5 py-3 text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr class="hover:bg-gray-50">
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center gap-2.5">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" class="w-7 h-7 rounded-full object-cover">
+                    <span class="font-medium text-gray-900">Rafael Souza</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5 text-gray-600">18/03/2024</td>
+                <td class="px-5 py-3.5 text-gray-600">08:00–17:00</td>
+                <td class="px-5 py-3.5 text-gray-600">8h00</td>
+                <td class="px-5 py-3.5 text-gray-600">Projeto Aurora / CC-102</td>
+                <td class="px-5 py-3.5 text-gray-600">Elétrica</td>
+                <td class="px-5 py-3.5 text-gray-400"><i class="fa-regular fa-square"></i></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Pendente</span></td>
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center justify-end gap-2">
+                    <button class="text-gray-400 hover:text-gray-600 px-1" title="Ver detalhes"><i class="fa-solid fa-eye"></i></button>
+                    <button onclick="document.getElementById('modal-rejeitar').classList.remove('hidden')" class="text-xs font-semibold text-red-600 border border-red-200 hover:bg-red-50 px-2.5 py-1.5 rounded-lg">Rejeitar</button>
+                    <button class="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-2.5 py-1.5 rounded-lg">Aprovar</button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50">
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center gap-2.5">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" class="w-7 h-7 rounded-full object-cover">
+                    <span class="font-medium text-gray-900">Rafael Souza</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5 text-gray-600">17/03/2024</td>
+                <td class="px-5 py-3.5 text-gray-600">08:00–19:00</td>
+                <td class="px-5 py-3.5 text-gray-600">11h00</td>
+                <td class="px-5 py-3.5 text-gray-600">Projeto Aurora / CC-102</td>
+                <td class="px-5 py-3.5 text-gray-600">Elétrica</td>
+                <td class="px-5 py-3.5 text-emerald-500"><i class="fa-solid fa-square-check"></i></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Pendente</span></td>
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center justify-end gap-2">
+                    <button class="text-gray-400 hover:text-gray-600 px-1" title="Ver detalhes"><i class="fa-solid fa-eye"></i></button>
+                    <button onclick="document.getElementById('modal-rejeitar').classList.remove('hidden')" class="text-xs font-semibold text-red-600 border border-red-200 hover:bg-red-50 px-2.5 py-1.5 rounded-lg">Rejeitar</button>
+                    <button class="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-2.5 py-1.5 rounded-lg">Aprovar</button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50">
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center gap-2.5">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-7.jpg" class="w-7 h-7 rounded-full object-cover">
+                    <span class="font-medium text-gray-900">Camila Rocha</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5 text-gray-600">16/03/2024</td>
+                <td class="px-5 py-3.5 text-gray-600">08:00–17:00</td>
+                <td class="px-5 py-3.5 text-gray-600">8h00</td>
+                <td class="px-5 py-3.5 text-gray-600">Projeto Vega / CC-118</td>
+                <td class="px-5 py-3.5 text-gray-600">Mecânica</td>
+                <td class="px-5 py-3.5 text-gray-400"><i class="fa-regular fa-square"></i></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Pendente</span></td>
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center justify-end gap-2">
+                    <button class="text-gray-400 hover:text-gray-600 px-1" title="Ver detalhes"><i class="fa-solid fa-eye"></i></button>
+                    <button onclick="document.getElementById('modal-rejeitar').classList.remove('hidden')" class="text-xs font-semibold text-red-600 border border-red-200 hover:bg-red-50 px-2.5 py-1.5 rounded-lg">Rejeitar</button>
+                    <button class="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-2.5 py-1.5 rounded-lg">Aprovar</button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50">
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center gap-2.5">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" class="w-7 h-7 rounded-full object-cover">
+                    <span class="font-medium text-gray-900">Bruno Lima</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5 text-gray-600">15/03/2024</td>
+                <td class="px-5 py-3.5 text-gray-600">08:00–17:00</td>
+                <td class="px-5 py-3.5 text-gray-600">8h00</td>
+                <td class="px-5 py-3.5 text-gray-600">Projeto Vega / CC-118</td>
+                <td class="px-5 py-3.5 text-gray-600">Mecânica</td>
+                <td class="px-5 py-3.5 text-gray-400"><i class="fa-regular fa-square"></i></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Pendente</span></td>
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center justify-end gap-2">
+                    <button class="text-gray-400 hover:text-gray-600 px-1" title="Ver detalhes"><i class="fa-solid fa-eye"></i></button>
+                    <button onclick="document.getElementById('modal-rejeitar').classList.remove('hidden')" class="text-xs font-semibold text-red-600 border border-red-200 hover:bg-red-50 px-2.5 py-1.5 rounded-lg">Rejeitar</button>
+                    <button class="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-2.5 py-1.5 rounded-lg">Aprovar</button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50 opacity-70">
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center gap-2.5">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg" class="w-7 h-7 rounded-full object-cover">
+                    <span class="font-medium text-gray-900">Diego Martins</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5 text-gray-600">14/03/2024</td>
+                <td class="px-5 py-3.5 text-gray-600">08:00–17:00</td>
+                <td class="px-5 py-3.5 text-gray-600">8h00</td>
+                <td class="px-5 py-3.5 text-gray-600">Projeto Aurora / CC-102</td>
+                <td class="px-5 py-3.5 text-gray-600">Elétrica</td>
+                <td class="px-5 py-3.5 text-gray-400"><i class="fa-regular fa-square"></i></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Aprovada</span></td>
+                <td class="px-5 py-3.5 text-right">
+                  <button disabled title="Linha aprovada é imutável" class="text-gray-300 cursor-not-allowed px-1"><i class="fa-solid fa-lock"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="px-5 py-3.5 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+          <span>Mostrando 5 de 34 apontamentos</span>
+          <div class="flex items-center gap-1">
+            <button class="w-7 h-7 rounded-lg border border-gray-200 hover:bg-gray-50"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="w-7 h-7 rounded-lg bg-primary-600 text-white">1</button>
+            <button class="w-7 h-7 rounded-lg border border-gray-200 hover:bg-gray-50">2</button>
+            <button class="w-7 h-7 rounded-lg border border-gray-200 hover:bg-gray-50">3</button>
+            <button class="w-7 h-7 rounded-lg border border-gray-200 hover:bg-gray-50"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Modal Rejeitar -->
+<div id="modal-rejeitar" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl w-full max-w-md">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <h3 class="font-bold text-gray-900">Rejeitar apontamento</h3>
+      <button onclick="document.getElementById('modal-rejeitar').classList.add('hidden')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="flex items-center gap-2.5 p-3 bg-gray-50 rounded-lg">
+        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" class="w-8 h-8 rounded-full object-cover">
+        <div>
+          <p class="text-sm font-medium text-gray-900">Rafael Souza</p>
+          <p class="text-xs text-gray-500">18/03/2024 · 08:00–17:00 · 8h00</p>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1.5">Motivo da rejeição <span class="text-red-500">*</span></label>
+        <textarea rows="4" placeholder="Explique o motivo da rejeição — obrigatório para o funcionário corrigir e reenviar." class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+        <p class="text-xs text-gray-400 mt-1">Este motivo será exibido ao funcionário para edição e reenvio.</p>
+      </div>
+    </div>
+    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200">
+      <button onclick="document.getElementById('modal-rejeitar').classList.add('hidden')" class="text-sm font-medium text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50">Cancelar</button>
+      <button class="text-sm font-medium text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg">Confirmar rejeição</button>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('load', function () {
+  try {
+    Plotly.newPlot('teamChart', [
+      {
+        type: 'bar', name: 'Aprovadas',
+        x: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+        y: [410, 460, 398, 380],
+        marker: { color: '#10b981' }
+      },
+      {
+        type: 'bar', name: 'Rejeitadas',
+        x: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+        y: [24, 16, 32, 20],
+        marker: { color: '#ef4444' }
+      }
+    ], {
+      barmode: 'group',
+      margin: { t: 10, r: 10, b: 30, l: 40 },
+      plot_bgcolor: '#fff',
+      paper_bgcolor: '#fff',
+      yaxis: { title: 'Horas', gridcolor: '#f1f5f9' },
+      xaxis: { gridcolor: '#f1f5f9' },
+      legend: { orientation: 'h', y: -0.2 }
+    }, { responsive: true, displayModeBar: false, displaylogo: false });
+  } catch (e) { console.error(e); }
+});
+</script>
+
+</body>
+</html>

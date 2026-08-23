@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { 50:'#eef2ff',100:'#e0e7ff',500:'#4f46e5',600:'#4338ca',700:'#3730a3' },
+        },
+        fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'] }
+      }
+    }
+  }
+</script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+<div id="app" class="flex w-full">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="hidden lg:flex lg:flex-col w-64 bg-white border-r border-gray-200 h-[1024px] sticky top-0">
+    <div class="h-16 flex items-center gap-2 px-6 border-b border-gray-200">
+      <div class="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center text-white font-bold text-sm">M</div>
+      <span class="font-bold text-lg text-gray-900">MCM</span>
+    </div>
+    <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm">
+        <i class="fa-solid fa-gauge w-4 text-center"></i> Dashboard
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm">
+        <i class="fa-regular fa-clock w-4 text-center"></i> Todos Apontamentos
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm">
+        <i class="fa-solid fa-chart-line w-4 text-center"></i> Relatórios
+      </a>
+      <p class="px-3 pt-4 pb-1 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Parametrização</p>
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary-50 text-primary-700 font-medium text-sm">
+        <i class="fa-solid fa-sliders w-4 text-center"></i> Cadastros
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm">
+        <i class="fa-solid fa-users-gear w-4 text-center"></i> Usuários & Permissões
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 font-medium text-sm">
+        <i class="fa-solid fa-clock-rotate-left w-4 text-center"></i> Log de Auditoria
+      </a>
+    </nav>
+    <div class="p-4 border-t border-gray-200">
+      <div class="flex items-center gap-3 px-2 py-2">
+        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg" class="w-9 h-9 rounded-full object-cover" alt="avatar">
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-gray-900 truncate">Eduardo Nunes</p>
+          <p class="text-xs text-gray-500">Admin</p>
+        </div>
+        <i class="fa-solid fa-arrow-right-from-bracket text-gray-400 hover:text-gray-600 cursor-pointer"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div id="main-content" class="flex-1 min-w-0 flex flex-col">
+
+    <!-- Header -->
+    <header id="header" class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-20">
+      <div class="flex items-center gap-3">
+        <button class="lg:hidden text-gray-500"><i class="fa-solid fa-bars"></i></button>
+        <div>
+          <h1 class="text-lg font-bold text-gray-900">Cadastros e Parâmetros</h1>
+          <p class="text-xs text-gray-500 hidden sm:block">Gerencie centros de custo, disciplinas, locais, projetos e alocações</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative text-gray-500 hover:text-gray-700">
+          <i class="fa-regular fa-bell text-lg"></i>
+        </button>
+        <button onclick="document.getElementById('modal-novo-item').classList.remove('hidden')" class="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+          <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Novo Item</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="p-4 sm:p-6 space-y-6">
+
+      <!-- KPI Cards -->
+      <div id="kpi-cards" class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Centros de Custo</p>
+          <p class="text-xl font-bold text-gray-900">18</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Disciplinas</p>
+          <p class="text-xl font-bold text-gray-900">9</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Locais</p>
+          <p class="text-xl font-bold text-gray-900">6</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Projetos ativos</p>
+          <p class="text-xl font-bold text-gray-900">12</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Usuários</p>
+          <p class="text-xl font-bold text-gray-900">47</p>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div id="tabs" class="bg-white rounded-xl border border-gray-200">
+        <div class="flex items-center gap-1 px-3 pt-3 overflow-x-auto border-b border-gray-200">
+          <button class="px-4 py-2.5 text-sm font-semibold text-primary-700 border-b-2 border-primary-600 whitespace-nowrap">Centros de Custo</button>
+          <button class="px-4 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent whitespace-nowrap">Disciplinas</button>
+          <button class="px-4 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent whitespace-nowrap">Locais</button>
+          <button class="px-4 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent whitespace-nowrap">Projetos</button>
+          <button class="px-4 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent whitespace-nowrap">Alocações</button>
+        </div>
+
+        <div class="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <input type="text" placeholder="Buscar centro de custo..." class="pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-primary-500">
+          </div>
+          <div class="flex items-center gap-2">
+            <select class="text-sm border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+              <option>Todos os projetos</option>
+              <option>Projeto Aurora</option>
+              <option>Projeto Vega</option>
+            </select>
+            <select class="text-sm border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+              <option>Status: Todos</option>
+              <option>Ativo</option>
+              <option>Inativo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <th class="px-5 py-3">Código</th>
+                <th class="px-5 py-3">Nome</th>
+                <th class="px-5 py-3">Projeto vinculado</th>
+                <th class="px-5 py-3">Funcionários com acesso</th>
+                <th class="px-5 py-3">Status</th>
+                <th class="px-5 py-3 text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr class="hover:bg-gray-50">
+                <td class="px-5 py-3.5 font-mono text-gray-700">CC-102</td>
+                <td class="px-5 py-3.5 font-medium text-gray-900">Instalações Elétricas</td>
+                <td class="px-5 py-3.5 text-gray-600">Projeto Aurora</td>
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center -space-x-2">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" class="w-6 h-6 rounded-full border-2 border-white object-cover">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg" class="w-6 h-6 rounded-full border-2 border-white object-cover">
+                    <span class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 text-[10px] font-semibold text-gray-600 flex items-center justify-center">+6</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Ativo</span></td>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-gray-400 hover:text-primary-600 px-1" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                  <button class="text-gray-400 hover:text-gray-600 px-1" title="Gerenciar acesso"><i class="fa-solid fa-user-lock"></i></button>
+                  <button class="text-gray-400 hover:text-red-600 px-1" title="Desativar"><i class="fa-solid fa-ban"></i></button>
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50">
+                <td class="px-5 py-3.5 font-mono text-gray-700">CC-118</td>
+                <td class="px-5 py-3.5 font-medium text-gray-900">Montagem Mecânica</td>
+                <td class="px-5 py-3.5 text-gray-600">Projeto Vega</td>
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center -space-x-2">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" class="w-6 h-6 rounded-full border-2 border-white object-cover">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-7.jpg" class="w-6 h-6 rounded-full border-2 border-white object-cover">
+                    <span class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 text-[10px] font-semibold text-gray-600 flex items-center justify-center">+4</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Ativo</span></td>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-gray-400 hover:text-primary-600 px-1" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                  <button class="text-gray-400 hover:text-gray-600 px-1" title="Gerenciar acesso"><i class="fa-solid fa-user-lock"></i></button>
+                  <button class="text-gray-400 hover:text-red-600 px-1" title="Desativar"><i class="fa-solid fa-ban"></i></button>
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50">
+                <td class="px-5 py-3.5 font-mono text-gray-700">CC-204</td>
+                <td class="px-5 py-3.5 font-medium text-gray-900">Civil & Estruturas</td>
+                <td class="px-5 py-3.5 text-gray-600">Projeto Órion</td>
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center -space-x-2">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-9.jpg" class="w-6 h-6 rounded-full border-2 border-white object-cover">
+                    <span class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 text-[10px] font-semibold text-gray-600 flex items-center justify-center">+3</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Ativo</span></td>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-gray-400 hover:text-primary-600 px-1" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                  <button class="text-gray-400 hover:text-gray-600 px-1" title="Gerenciar acesso"><i class="fa-solid fa-user-lock"></i></button>
+                  <button class="text-gray-400 hover:text-red-600 px-1" title="Desativar"><i class="fa-solid fa-ban"></i></button>
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50 opacity-60">
+                <td class="px-5 py-3.5 font-mono text-gray-700">CC-077</td>
+                <td class="px-5 py-3.5 font-medium text-gray-900">Instrumentação</td>
+                <td class="px-5 py-3.5 text-gray-600">Projeto Nova (encerrado)</td>
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center -space-x-2">
+                    <span class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 text-[10px] font-semibold text-gray-600 flex items-center justify-center">0</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>Inativo</span></td>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-gray-400 hover:text-primary-600 px-1" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                  <button class="text-gray-400 hover:text-gray-600 px-1" title="Gerenciar acesso"><i class="fa-solid fa-user-lock"></i></button>
+                  <button class="text-gray-400 hover:text-emerald-600 px-1" title="Reativar"><i class="fa-solid fa-rotate-left"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="px-5 py-3.5 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+          <span>Mostrando 4 de 18 centros de custo</span>
+          <div class="flex items-center gap-1">
+            <button class="w-7 h-7 rounded-lg border border-gray-200 hover:bg-gray-50"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="w-7 h-7 rounded-lg bg-primary-600 text-white">1</button>
+            <button class="w-7 h-7 rounded-lg border border-gray-200 hover:bg-gray-50">2</button>
+            <button class="w-7 h-7 rounded-lg border border-gray-200 hover:bg-gray-50"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users & permissions preview -->
+      <div id="users-card" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="p-5 border-b border-gray-200 flex items-center justify-between">
+          <h3 class="font-semibold text-gray-900 text-sm">Usuários & escopo de acesso</h3>
+          <a href="#" class="text-xs font-semibold text-primary-600 hover:underline">Ver todos <i class="fa-solid fa-arrow-right ml-1"></i></a>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <th class="px-5 py-3">Usuário</th>
+                <th class="px-5 py-3">Papel</th>
+                <th class="px-5 py-3">Job Leader</th>
+                <th class="px-5 py-3">Centros de custo permitidos</th>
+                <th class="px-5 py-3">Disciplinas permitidas</th>
+                <th class="px-5 py-3 text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr class="hover:bg-gray-50">
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center gap-2.5">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" class="w-7 h-7 rounded-full object-cover">
+                    <span class="font-medium text-gray-900">Rafael Souza</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5"><span class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">Funcionário</span></td>
+                <td class="px-5 py-3.5 text-gray-600">Marina Alves</td>
+                <td class="px-5 py-3.5 text-gray-600">CC-102, CC-118</td>
+                <td class="px-5 py-3.5 text-gray-600">Elétrica</td>
+                <td class="px-5 py-3.5 text-right">
+                  <button onclick="document.getElementById('modal-permissoes').classList.remove('hidden')" class="text-xs font-semibold text-primary-600 border border-primary-200 hover:bg-primary-50 px-2.5 py-1.5 rounded-lg">Gerenciar</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50">
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center gap-2.5">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" class="w-7 h-7 rounded-full object-cover">
+                    <span class="font-medium text-gray-900">Marina Alves</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5"><span class="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">Job Leader</span></td>
+                <td class="px-5 py-3.5 text-gray-400">—</td>
+                <td class="px-5 py-3.5 text-gray-600">CC-102, CC-118, CC-204</td>
+                <td class="px-5 py-3.5 text-gray-600">Todas</td>
+                <td class="px-5 py-3.5 text-right">
+                  <button onclick="document.getElementById('modal-permissoes').classList.remove('hidden')" class="text-xs font-semibold text-primary-600 border border-primary-200 hover:bg-primary-50 px-2.5 py-1.5 rounded-lg">Gerenciar</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50">
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center gap-2.5">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-7.jpg" class="w-7 h-7 rounded-full object-cover">
+                    <span class="font-medium text-gray-900">Camila Rocha</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5"><span class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">Funcionário</span></td>
+                <td class="px-5 py-3.5 text-gray-600">Marina Alves</td>
+                <td class="px-5 py-3.5 text-gray-600">CC-118</td>
+                <td class="px-5 py-3.5 text-gray-600">Mecânica</td>
+                <td class="px-5 py-3.5 text-right">
+                  <button onclick="document.getElementById('modal-permissoes').classList.remove('hidden')" class="text-xs font-semibold text-primary-600 border border-primary-200 hover:bg-primary-50 px-2.5 py-1.5 rounded-lg">Gerenciar</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Audit log preview -->
+      <div id="audit-card" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="p-5 border-b border-gray-200 flex items-center justify-between">
+          <h3 class="font-semibold text-gray-900 text-sm">Log de auditoria recente</h3>
+          <a href="#" class="text-xs font-semibold text-primary-600 hover:underline">Ver log completo <i class="fa-solid fa-arrow-right ml-1"></i></a>
+        </div>
+        <div class="divide-y divide-gray-100">
+          <div class="px-5 py-3.5 flex items-start gap-3">
+            <div class="w-7 h-7 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fa-solid fa-xmark text-red-500 text-xs"></i></div>
+            <div class="flex-1 min-w-0 text-sm">
+              <p class="text-gray-800"><span class="font-semibold">Marina Alves</span> rejeitou o apontamento de <span class="font-semibold">Rafael Souza</span> (12/03) — motivo: "Horário não confere com o crachá."</p>
+              <p class="text-xs text-gray-400 mt-0.5">Hoje, 14:32</p>
+            </div>
+          </div>
+          <div class="px-5 py-3.5 flex items-start gap-3">
+            <div class="w-7 h-7 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fa-solid fa-check text-emerald-500 text-xs"></i></div>
+            <div class="flex-1 min-w-0 text-sm">
+              <p class="text-gray-800"><span class="font-semibold">Marina Alves</span> aprovou o apontamento de <span class="font-semibold">Bruno Lima</span> (15/03).</p>
+              <p class="text-xs text-gray-400 mt-0.5">Hoje, 11:05</p>
+            </div>
+          </div>
+          <div class="px-5 py-3.5 flex items-start gap-3">
+            <div class="w-7 h-7 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fa-solid fa-pen text-primary-500 text-xs"></i></div>
+            <div class="flex-1 min-w-0 text-sm">
+              <p class="text-gray-800"><span class="font-semibold">Eduardo Nunes</span> editou o centro de custo <span class="font-semibold">CC-102</span> (acesso ampliado para +2 funcionários).</p>
+              <p class="text-xs text-gray-400 mt-0.5">Ontem, 17:48</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Modal Novo Item -->
+<div id="modal-novo-item" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl w-full max-w-md">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <h3 class="font-bold text-gray-900">Novo Centro de Custo</h3>
+      <button onclick="document.getElementById('modal-novo-item').classList.add('hidden')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1.5">Código</label>
+        <input type="text" placeholder="Ex: CC-305" class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1.5">Nome</label>
+        <input type="text" placeholder="Ex: Instalações Elétricas" class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1.5">Projeto vinculado</label>
+        <select class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option>Projeto Aurora</option>
+          <option>Projeto Vega</option>
+          <option>Projeto Órion</option>
+        </select>
+      </div>
+      <label class="flex items-center gap-2 text-sm text-gray-700">
+        <input type="checkbox" checked class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+        Ativo
+      </label>
+    </div>
+    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200">
+      <button onclick="document.getElementById('modal-novo-item').classList.add('hidden')" class="text-sm font-medium text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50">Cancelar</button>
+      <button class="text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 px-4 py-2 rounded-lg">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Permissões -->
+<div id="modal-permissoes" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl w-full max-w-lg max-h-[90%] overflow-y-auto">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <div>
+        <h3 class="font-bold text-gray-900">Escopo de acesso</h3>
+        <p class="text-xs text-gray-500 mt-0.5">Defina quais opções este funcionário pode usar ao apontar horas</p>
+      </div>
+      <button onclick="document.getElementById('modal-permissoes').classList.add('hidden')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+    </div>
+    <div class="p-6 space-y-5">
+      <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" class="w-9 h-9 rounded-full object-cover">
+        <div>
+          <p class="text-sm font-medium text-gray-900">Rafael Souza</p>
+          <p class="text-xs text-gray-500">Funcionário · Job Leader: Marina Alves</p>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-700 mb-2">Centros de custo permitidos</label>
+        <div class="flex flex-wrap gap-2">
+          <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-primary-50 text-primary-700 border border-primary-200">CC-102 <i class="fa-solid fa-xmark cursor-pointer"></i></span>
+          <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-primary-50 text-primary-700 border border-primary-200">CC-118 <i class="fa-solid fa-xmark cursor-pointer"></i></span>
+          <button class="px-2.5 py-1 rounded-full text-xs font-medium border border-dashed border-gray-300 text-gray-500 hover:border-primary-400 hover:text-primary-600">+ Adicionar</button>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-700 mb-2">Disciplinas permitidas</label>
+        <div class="flex flex-wrap gap-2">
+          <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-primary-50 text-primary-700 border border-primary-200">Elétrica <i class="fa-solid fa-xmark cursor-pointer"></i></span>
+          <button class="px-2.5 py-1 rounded-full text-xs font-medium border border-dashed border-gray-300 text-gray-500 hover:border-primary-400 hover:text-primary-600">+ Adicionar</button>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-700 mb-2">Locais permitidos</label>
+        <div class="flex flex-wrap gap-2">
+          <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-primary-50 text-primary-700 border border-primary-200">Obra Central <i class="fa-solid fa-xmark cursor-pointer"></i></span>
+          <button class="px-2.5 py-1 rounded-full text-xs font-medium border border-dashed border-gray-300 text-gray-500 hover:border-primary-400 hover:text-primary-600">+ Adicionar</button>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200">
+      <button onclick="document.getElementById('modal-permissoes').classList.add('hidden')" class="text-sm font-medium text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50">Cancelar</button>
+      <button class="text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 px-4 py-2 rounded-lg">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
