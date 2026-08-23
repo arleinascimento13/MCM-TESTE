@@ -9,7 +9,7 @@ import { Trash2 } from "lucide-react";
 
 type Item = { id: string; nome: string; ativo: boolean };
 
-export function ParamManager({ resource, title }: { resource: string; title: string }) {
+export function ParamManager({ resource }: { resource: string }) {
   const [itens, setItens] = useState<Item[]>([]);
   const [nome, setNome] = useState("");
   const [erro, setErro] = useState<string | null>(null);
@@ -45,7 +45,6 @@ export function ParamManager({ resource, title }: { resource: string; title: str
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-medium">{title}</h2>
       <div className="flex items-end gap-3">
         <div className="space-y-1">
           <Label htmlFor="novo-nome">Novo nome</Label>

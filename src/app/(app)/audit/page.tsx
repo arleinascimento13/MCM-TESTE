@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getSessionUser } from "@/lib/auth";
 import { listAuditLog } from "@/services/reports";
 import { AuditTable } from "@/components/audit-table";
+import { PageHeader } from "@/components/layout/page-header";
 
 export default async function AuditPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const user = await getSessionUser();
@@ -19,16 +20,18 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
   }));
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Auditoria</h1>
-      <Suspense fallback={<div>Carregando...</div>}>
-        <AuditTable
-          rows={rows}
-          total={result.total}
-          page={result.page}
-          pageSize={result.pageSize}
-        />
-      </Suspense>
-    </div>
+    <>
+      <PageHeader title="Auditoria" subtitle="Registro histórico de ações no sistema" />
+      <main className="p-4 sm:p-6">
+        <Suspense fallback={<div>Carregando...</div>}>
+          <AuditTable
+            rows={rows}
+            total={result.total}
+            page={result.page}
+            pageSize={result.pageSize}
+          />
+        </Suspense>
+      </main>
+    </>
   );
 }

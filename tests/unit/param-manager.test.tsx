@@ -16,7 +16,7 @@ describe("ParamManager", () => {
     mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({ data: { id: "2", nome: "Financeiro", ativo: true } }) });
     mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({ data: [{ id: "1", nome: "Engenharia", ativo: true }, { id: "2", nome: "Financeiro", ativo: true }] }) });
 
-    render(<ParamManager resource="cost-centers" title="Centros de custo" />);
+    render(<ParamManager resource="cost-centers" />);
     expect(await screen.findByText("Engenharia")).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Novo nome"), { target: { value: "Financeiro" } });

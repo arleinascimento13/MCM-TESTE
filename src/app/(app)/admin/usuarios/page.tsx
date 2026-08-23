@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Trash2 } from "lucide-react";
+import { PageHeader } from "@/components/layout/page-header";
 
 type User = { id: string; nome: string; email: string; papel: string; ativo: boolean; criadoEm: string };
 
@@ -52,8 +53,10 @@ export default function UsuariosPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <form onSubmit={create} className="flex items-end gap-3 flex-wrap">
+    <>
+      <PageHeader title="Usuários & Permissões" subtitle="Crie usuários e defina papéis" />
+      <main className="space-y-4 p-4 sm:p-6">
+        <form onSubmit={create} className="flex items-end gap-3 flex-wrap">
         <div className="space-y-1">
           <Label htmlFor="nome">Nome</Label>
           <Input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} required />
@@ -108,6 +111,7 @@ export default function UsuariosPage() {
           ))}
         </TableBody>
       </Table>
-    </div>
+      </main>
+    </>
   );
 }

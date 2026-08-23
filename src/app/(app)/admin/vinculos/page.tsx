@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Trash2 } from "lucide-react";
+import { PageHeader } from "@/components/layout/page-header";
 
 type User = { id: string; nome: string };
 
@@ -61,8 +62,10 @@ export default function VinculosPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <form onSubmit={create} className="flex items-end gap-3 flex-wrap">
+    <>
+      <PageHeader title="Job Leaders" subtitle="Vincule funcionários aos seus job leaders" />
+      <main className="space-y-4 p-4 sm:p-6">
+        <form onSubmit={create} className="flex items-end gap-3 flex-wrap">
         <div className="space-y-1">
           <Label htmlFor="funcionario">Funcionário</Label>
           <Select value={funcionarioId} onValueChange={(v) => { if (v) setFuncionarioId(v); }} required>
@@ -116,6 +119,7 @@ export default function VinculosPage() {
           ))}
         </TableBody>
       </Table>
-    </div>
+      </main>
+    </>
   );
 }

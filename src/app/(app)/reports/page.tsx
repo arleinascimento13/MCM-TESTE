@@ -3,6 +3,7 @@ import { ChartCard } from "@/components/chart-card";
 import { PeriodFilter } from "@/components/period-filter";
 import { BarChartComponent } from "@/components/bar-chart";
 import { hoursByProject, hoursByEmployee, hoursByCostCenter, hoursByDiscipline, hoursByPeriod } from "@/services/reports";
+import { PageHeader } from "@/components/layout/page-header";
 
 export const dynamic = "force-dynamic";
 
@@ -24,28 +25,31 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   ]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Relatórios</h1>
-        <PeriodFilter />
-      </div>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <ChartCard title="Horas por projeto">
-          <BarChartComponent data={porProjeto.map((r) => ({ name: r.projectName, value: r.totalHoras }))} />
-        </ChartCard>
-        <ChartCard title="Horas por funcionário">
-          <BarChartComponent data={porFuncionario.map((r) => ({ name: r.funcionarioNome, value: r.totalHoras }))} />
-        </ChartCard>
-        <ChartCard title="Horas por centro de custo">
-          <BarChartComponent data={porCC.map((r) => ({ name: r.costCenterName, value: r.totalHoras }))} />
-        </ChartCard>
-        <ChartCard title="Horas por disciplina">
-          <BarChartComponent data={porDisciplina.map((r) => ({ name: r.disciplineName, value: r.totalHoras }))} />
-        </ChartCard>
-        <ChartCard title="Horas por período">
-          <BarChartComponent data={porPeriodo.map((r) => ({ name: `${String(r.mes).padStart(2, "0")}/${r.ano}`, value: r.totalHoras }))} />
-        </ChartCard>
-      </div>
-    </div>
+    <>
+      <PageHeader
+        title="Relatórios"
+        subtitle="Horas por projeto, funcionário, centro de custo, disciplina e período"
+        actions={<PeriodFilter />}
+      />
+      <main className="space-y-6 p-4 sm:p-6">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <ChartCard title="Horas por projeto">
+            <BarChartComponent data={porProjeto.map((r) => ({ name: r.projectName, value: r.totalHoras }))} />
+          </ChartCard>
+          <ChartCard title="Horas por funcionário">
+            <BarChartComponent data={porFuncionario.map((r) => ({ name: r.funcionarioNome, value: r.totalHoras }))} />
+          </ChartCard>
+          <ChartCard title="Horas por centro de custo">
+            <BarChartComponent data={porCC.map((r) => ({ name: r.costCenterName, value: r.totalHoras }))} />
+          </ChartCard>
+          <ChartCard title="Horas por disciplina">
+            <BarChartComponent data={porDisciplina.map((r) => ({ name: r.disciplineName, value: r.totalHoras }))} />
+          </ChartCard>
+          <ChartCard title="Horas por período">
+            <BarChartComponent data={porPeriodo.map((r) => ({ name: `${String(r.mes).padStart(2, "0")}/${r.ano}`, value: r.totalHoras }))} />
+          </ChartCard>
+        </div>
+      </main>
+    </>
   );
 }

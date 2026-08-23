@@ -38,10 +38,19 @@ export function ApprovalDrawer({ entryId, onDone }: { entryId: string; onDone?: 
 
   return (
     <div className="flex items-center gap-2">
-      <Button size="sm" variant="outline" onClick={() => setModo(modo === "aprovacao" ? null : "aprovacao")}>
+      <Button
+        size="sm"
+        onClick={() => setModo(modo === "aprovacao" ? null : "aprovacao")}
+        className={modo === "aprovacao" ? "" : "bg-success text-white hover:bg-success/90"}
+      >
         {modo === "aprovacao" ? "Cancelar" : "Aprovar"}
       </Button>
-      <Button size="sm" variant="outline" onClick={() => setModo(modo === "rejeicao" ? null : "rejeicao")}>
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => setModo(modo === "rejeicao" ? null : "rejeicao")}
+        className={modo === "rejeicao" ? "" : "border-destructive/30 text-destructive hover:bg-destructive/10"}
+      >
         {modo === "rejeicao" ? "Cancelar" : "Rejeitar"}
       </Button>
       {modo === "rejeicao" && (
