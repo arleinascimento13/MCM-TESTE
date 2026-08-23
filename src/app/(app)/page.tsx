@@ -4,6 +4,7 @@ import { ChartCard } from "@/components/chart-card";
 import { ProjetoChart } from "@/components/projeto-chart";
 import { PeriodChart } from "@/components/period-chart";
 import { hoursByProject, hoursByPeriod } from "@/services/reports";
+import { PageHeader } from "@/components/layout/page-header";
 
 export const dynamic = "force-dynamic";
 
@@ -19,18 +20,21 @@ export default async function DashboardPage() {
   const totalHoras = porProjeto.reduce((acc, p) => acc + Number(p.totalHoras), 0);
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Horas aprovadas" value={totalHoras.toFixed(2)} sub="Período total" />
-        <KpiCard label="Projetos" value={String(porProjeto.length)} />
-        <KpiCard label="Meses com apontamento" value={String(porPeriodo.length)} />
-      </div>
-      <ChartCard title="Horas por projeto">
-        <ProjetoChart data={porProjeto} />
-      </ChartCard>
-      <ChartCard title="Horas por período">
-        <PeriodChart data={porPeriodo} />
-      </ChartCard>
-    </div>
+    <>
+      <PageHeader title="Meus Apontamentos" subtitle="Acompanhe e registre suas horas trabalhadas" />
+      <main className="space-y-6 p-4 sm:p-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <KpiCard label="Horas aprovadas" value={totalHoras.toFixed(2)} sub="Período total" />
+          <KpiCard label="Projetos" value={String(porProjeto.length)} />
+          <KpiCard label="Meses com apontamento" value={String(porPeriodo.length)} />
+        </div>
+        <ChartCard title="Horas por projeto">
+          <ProjetoChart data={porProjeto} />
+        </ChartCard>
+        <ChartCard title="Horas por período">
+          <PeriodChart data={porPeriodo} />
+        </ChartCard>
+      </main>
+    </>
   );
 }

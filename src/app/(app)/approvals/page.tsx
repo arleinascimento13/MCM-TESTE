@@ -1,6 +1,7 @@
 import { getSessionUser } from "@/lib/auth";
 import { listTimeEntries } from "@/services/time-entries";
 import { ApprovalsTable } from "@/components/approvals-table";
+import { PageHeader } from "@/components/layout/page-header";
 
 export default async function ApprovalsPage() {
   const user = await getSessionUser();
@@ -17,14 +18,19 @@ export default async function ApprovalsPage() {
   }));
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Aprovações pendentes</h1>
-      <ApprovalsTable
-        rows={rows}
-        total={result.total}
-        page={result.page}
-        pageSize={result.pageSize}
+    <>
+      <PageHeader
+        title="Aprovações da Equipe"
+        subtitle="Revise e aprove os apontamentos de horas do seu time"
       />
-    </div>
+      <main className="space-y-4 p-4 sm:p-6">
+        <ApprovalsTable
+          rows={rows}
+          total={result.total}
+          page={result.page}
+          pageSize={result.pageSize}
+        />
+      </main>
+    </>
   );
 }
