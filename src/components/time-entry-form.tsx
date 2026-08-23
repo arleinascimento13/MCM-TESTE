@@ -94,21 +94,11 @@ export function TimeEntryForm({ initial, entryId }: { initial?: Partial<FormData
         </div>
         <div className="space-y-1">
           <Label htmlFor="projectId">Projeto</Label>
-          <select id="projectId" className="w-full rounded-sm border border-border bg-muted px-3 py-2 text-sm" {...register("projectId")}>
+          <select id="projectId" className="h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50" {...register("projectId")}>
             <option value="">Selecione...</option>
             {opcoes.projects.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
           </select>
           {errors.projectId && <p className="text-sm text-destructive">{errors.projectId.message}</p>}
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="mes">Mês (competência)</Label>
-          <Input id="mes" type="number" {...register("mes", { valueAsNumber: true })} />
-          {errors.mes && <p className="text-sm text-destructive">{errors.mes.message}</p>}
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="ano">Ano (competência)</Label>
-          <Input id="ano" type="number" {...register("ano", { valueAsNumber: true })} />
-          {errors.ano && <p className="text-sm text-destructive">{errors.ano.message}</p>}
         </div>
         <div className="space-y-1">
           <Label htmlFor="inicio">Início</Label>
@@ -121,8 +111,18 @@ export function TimeEntryForm({ initial, entryId }: { initial?: Partial<FormData
           {errors.fim && <p className="text-sm text-destructive">{errors.fim.message}</p>}
         </div>
         <div className="space-y-1">
+          <Label htmlFor="mes">Mês (competência)</Label>
+          <Input id="mes" type="number" {...register("mes", { valueAsNumber: true })} />
+          {errors.mes && <p className="text-sm text-destructive">{errors.mes.message}</p>}
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="ano">Ano (competência)</Label>
+          <Input id="ano" type="number" {...register("ano", { valueAsNumber: true })} />
+          {errors.ano && <p className="text-sm text-destructive">{errors.ano.message}</p>}
+        </div>
+        <div className="space-y-1">
           <Label htmlFor="costCenterId">Centro de custo</Label>
-          <select id="costCenterId" className="w-full rounded-sm border border-border bg-muted px-3 py-2 text-sm" {...register("costCenterId")}>
+          <select id="costCenterId" className="h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50" {...register("costCenterId")}>
             <option value="">Selecione...</option>
             {opcoes.costCenters.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
           </select>
@@ -130,15 +130,15 @@ export function TimeEntryForm({ initial, entryId }: { initial?: Partial<FormData
         </div>
         <div className="space-y-1">
           <Label htmlFor="disciplineId">Disciplina</Label>
-          <select id="disciplineId" className="w-full rounded-sm border border-border bg-muted px-3 py-2 text-sm" {...register("disciplineId")}>
+          <select id="disciplineId" className="h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50" {...register("disciplineId")}>
             <option value="">Selecione...</option>
             {opcoes.disciplines.map((d) => <option key={d.id} value={d.id}>{d.nome}</option>)}
           </select>
           {errors.disciplineId && <p className="text-sm text-destructive">{errors.disciplineId.message}</p>}
         </div>
-        <div className="space-y-1">
+        <div className="space-y-1 md:col-span-2">
           <Label htmlFor="locationId">Local</Label>
-          <select id="locationId" className="w-full rounded-sm border border-border bg-muted px-3 py-2 text-sm" {...register("locationId")}>
+          <select id="locationId" className="h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50" {...register("locationId")}>
             <option value="">Selecione...</option>
             {opcoes.locations.map((l) => <option key={l.id} value={l.id}>{l.nome}</option>)}
           </select>
